@@ -1,0 +1,254 @@
+#|
+Universal kanata config for all keyboards.
+
+Layers:
+1. HRMs: hold asdf or jkl;
+   - when holding one side of HRM, some keys in the other side use tab-dance
+   - Caps Lock: tap = Esc, hold = Mouse layer
+   - Space: tap = Space, hold = Nav layer
+   Special HRM
+    - hold `a` or `;` 
+     use tap-dance for `m` and `c` (tap m = TAB, double tap m = m)
+2. NAV: hold space to get arrows, backtick, tilde, functions, home, pageup, backspace, volume, etc
+- e/s/d/f become Arrow keys
+- c = PgUp, v = PgDn, b = End, g = Home
+- t = tab
+- q = tilde
+- w = backtick
+- a = enter
+- x = backspace
+- z = delete
+- F3 = Print Scr
+- f11/f12 = volume up and down
+- f1/f2 = brightness up and down
+- Right side: transparent (home row mods still work)
+3. Capslock: tap for ESC, hold for Mouse layer
+4. Mouse: hold capsock
+5. Media: a easy layer for media playing. Shortcut toggle = Meta + ESC
+   arrows, volume, brighness
+6. Bypass: bypass kanata completely. Shortcut toggle = Meta + Ctrl + ESC
+|#
+
+(defcfg
+  process-unmapped-keys yes
+  linux-device-detect-mode keyboard-only
+)
+
+(defsrc
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    bksl
+  caps a    s    d    f    g    h    j    k    l    scln apos ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet rctl
+)
+
+(defvar
+  ;; Every key on the left side (Used for opposite-hand modifier checks)
+  l-hand (
+    esc f1 f2 f3 f4 f5
+    grv 1 2 3 4 5
+    tab q w e r t
+    caps a s d f g
+    lsft z x c v b
+    lctl lmet lalt
+  )
+  
+  ;; Every key on the right side
+  r-hand (
+    f6 f7 f8 f9 f10 f11 f12
+    6 7 8 9 0 - = bspc
+    y u i o p [ ] bksl
+    h j k l scln apos ret
+    n m , . / rsft
+    ralt rmet rctl
+  )
+)
+
+(defalias
+  ;; Layer toggles
+  cl (tap-hold 0 200 esc (layer-while-held mouse))
+  sp (tap-hold 0 200 spc (layer-while-held nav))
+  
+  ;; keys m and c chosen for tap-dance
+  m-td (tap-dance 200 (tab m))
+  c-td (tap-dance 200 (tab c))
+
+  ;; special mod keys
+  a-hold (multi lmet (layer-while-held a-layer))
+  sc-hold (multi rmet (layer-while-held sc-layer))
+
+  ;; --- LAYER SWITCH ACTIONS ---
+  bas (layer-switch base)
+  byp (layer-switch bypass)
+  med (layer-switch media)
+
+  ;; --- FORK LOGIC ---
+  ;; BASE: Meta+Ctrl+Esc -> Bypass | Meta+Esc -> Media | Esc -> @cl
+  m-e-bas (fork @med @byp (lctl rctl))
+  e-bas   (fork @cl @m-e-bas (lmet rmet))
+
+  ;; MEDIA: Meta+Ctrl+Esc -> Bypass | Meta+Esc -> Base | Esc -> @cl
+  m-e-med (fork @bas @byp (lctl rctl))
+  e-med   (fork @cl @m-e-med (lmet rmet))
+
+  ;; BYPASS: Meta+Ctrl+Esc -> Base | Meta+Esc -> Normal Esc | Esc -> Normal Esc
+  m-e-byp (fork esc @bas (lctl rctl))
+  e-byp   (fork esc @m-e-byp (lmet rmet))
+
+  ;; toggle media layer
+  ;; mdon (layer-switch media) 
+  ;;mdoff (layer-switch base)
+  ;;lmet-b (multi lmet (layer-while-held md-tog-on))
+  ;;rmet-b (multi rmet (layer-while-held md-tog-on))  
+  ;;lmet-m (multi lmet (layer-while-held md-tog-off))
+  ;;rmet-m (multi rmet (layer-while-held md-tog-off))
+  
+  ;; Right hand mods ONLY trigger if a left hand key is pressed
+  ;; Activates $tap-action early if a key within $tap-keys is pressed before hold activates
+  ;; "pressing another key on the same half of the keyboard... will activate an early tap action"
+  j (tap-hold-release-keys 0 200 j rsft $r-hand)
+  k (tap-hold-release-keys 0 200 k rctl $r-hand)
+  l (tap-hold-release-keys 0 200 l ralt $r-hand)
+  ; (tap-hold-release-keys 0 300 ; @sc-hold $r-hand) 
+  
+  ;; Left hand mods ONLY trigger if a right hand key is pressed
+  a (tap-hold-release-keys 0 300 a @a-hold $l-hand) 
+  s (tap-hold-release-keys 0 200 s lalt $l-hand)
+  d (tap-hold-release-keys 0 200 d lctl $l-hand)
+  f (tap-hold-release-keys 0 200 f lsft $l-hand)
+
+  ;; --- MOUSE SPEEDS ---
+  fst (movemouse-speed 500) 
+  slw (movemouse-speed 20)  
+
+  ;; Normal Mouse Cursor Movement
+  mmu (movemouse-up 10 4)
+  mmd (movemouse-down 10 4)
+  mml (movemouse-left 10 4)
+  mmr (movemouse-right 10 4)
+
+  ;; Scrolling
+  mwl (mwheel-left 100 30)
+  mwd (mwheel-down 100 30)
+  mwu (mwheel-up 100 30)
+  mwr (mwheel-right 100 30)
+
+  ;; Mouse clicks & Macros
+  ml mlft
+  mr mrgt
+  cpy C-c
+  pst C-v
+)
+
+;; layer keys = space, capslock, esc
+;; HRMs
+;; (deflayer base
+;;   @cl  _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _    _    _
+;;   @cl  @a   @s   @d   @f   _    _    @j   @k   @l   @;   _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _
+;;   _   @lmet-b    _              @sp            _   @rmet-b    _
+;; )
+;; using fork
+(deflayer base
+  @e-bas _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  @e-bas @a   @s   @d   @f   _    _    @j   @k   @l   @;   _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _   _    _              @sp            _   _    _
+)
+
+;; hold space to trigger `nav` layer
+(deflayer nav
+  _    brdn brup prnt _    _    _    _    _    _    _    vold volu
+  _    f1  f2  f3  f4  f5  f6  f7  f8  f9  f10  f11  f12  _
+  tab  S-grv grv up   _    tab  _    _    _    _    _    _    _    _
+  _    ret  left down rght home _    _    _    _    _    _    _
+  _    del  bspc pgup pgdn end  _    _    _    _    _    _
+  _    _    _              _              _    _    _
+)
+
+;; this is triggered when a meta HRM key is held
+(deflayer a-layer
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    @m-td _   _    _    _
+  _    _    _              _              _    _    _
+)
+
+;; this is triggered when a meta HRM key is held
+(deflayer sc-layer
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    @c-td _   _    _    _    _    _    _    _
+  _    _    _              _              _    _    _
+)
+
+;; hold i or o to change cursor speed
+;; comma and dot also scroll
+(deflayer mouse
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    @mwu _    _  @cpy @pst @mmu    _    _    _    _    _
+  _    _    @mwl @mwd @mwr _    _  @mml @mmd @mmr _    _    _
+  _    _    _ @fst @slw  _    _    @mr  @mwd  @mwu  _    _
+  _    _    _              @ml            _    _    _
+)
+
+;; MEDIA LAYER (Meta + ESC)
+;; (deflayer media
+;;   @cl  _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    brdn brup _    _    _    _    _    _    _    _    vold volu _
+;;   _    _    _    up   _    _    _    _    up    _    _    _    _    _
+;;   @cl  @a   left down rght _    _    left down right   _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _
+;;   _   @lmet-m  _           @sp            _   @rmet-m  _
+;; )
+;; using fork:
+(deflayer media
+  @e-med _    _    _    _    _    _    _    _    _    _    _    _
+  _    brdn brup _    _    _    _    _    _    _    _    vold volu _
+  _    _    _    up   _    _    _    _    up    _    _    _    _    _
+  @e-med @a   left down rght _    _    left down right   _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _   _  _           @sp            _   _  _
+)
+
+;; Accessed when holding physical Meta in BASE
+;; (deflayer md-tog-on
+;;   @mdon _   _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _              _              _    _    _
+;; )
+
+;; Accessed when holding physical Meta in MEDIA
+;; (deflayer md-tog-off
+;;   @mdoff _  _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _    _    _    _    _    _    _    _    _    _
+;;   _    _    _              _              _    _    _
+;; )
+
+;; BYPASS LAYER: All keys revert to raw physical output except the exit forks. 
+;; HRMs and tap-holds are fully disabled here.
+(deflayer bypass
+  @e-byp _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  @e-byp a    s    d    f    _    _    j    k    l    ;    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              spc            _    _    _
+)
+
