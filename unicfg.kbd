@@ -1,0 +1,158 @@
+#|
+kanata v1.12.0
+Universal kanata config for all keyboards.
+
+# Layer triggers:
+
+## hold
+1. thumb keys = space (meta and alt keys can also be used)
+2. capslock, escape (because it is placed at capslock)
+
+- Caps Lock: tap = Esc, hold = Mouse layer
+- Space: tap = Space, hold = Nav layer
+
+## tap
+1. meta + esc
+2. meta + ccontrol + esc
+
+# Layers:
+1. altt
+- one shot mods
+- esdf become Arrow keys
+- u = PgUp, t = PgDn, h = End, y = Home
+- n = space
+- v = tab
+- w = tilde
+- q = backtick
+- a = enter
+- x = backspace
+- z = delete
+- F3 = Print Scr
+- f11/f12 = volume up and down
+- f1/f2 = brightness up and down
+2. Mouse: hold capsock
+3. Media: a easy layer for media playing. 
+   arrows, volume, brighness
+   Shortcut toggle = Meta + ESC
+4. Bypass: bypass kanata completely. 
+   Shortcut toggle = Meta + Ctrl + ESC
+
+|#
+
+(defcfg
+  process-unmapped-keys yes
+  linux-device-detect-mode keyboard-only
+)
+
+(defsrc
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet rctl
+)
+
+(defalias
+  ;; Layer toggles
+  cl (tap-hold 0 200 esc (layer-while-held mouse))  ;; cl = capslock
+  sp (tap-hold 0 200 spc (layer-while-held altt))   ;; sp = space
+  
+  ;; --- LAYER SWITCH ACTIONS ---
+  bas (layer-switch base)
+  byp (layer-switch bypass)
+  med (layer-switch media)
+
+  ;; --- FORK LOGIC ---
+  ;; BASE: Meta+Ctrl+Esc -> Bypass | Meta+Esc -> Media | Esc -> @cl
+  m-e-bas (fork @med @byp (lctl rctl))
+  e-bas   (fork @cl @m-e-bas (lmet rmet))
+
+  ;; MEDIA: Meta+Ctrl+Esc -> Bypass | Meta+Esc -> Base | Esc -> @cl
+  m-e-med (fork @bas @byp (lctl rctl))
+  e-med   (fork @cl @m-e-med (lmet rmet))
+
+  ;; BYPASS: Meta+Ctrl+Esc -> Base | Meta+Esc -> Normal Esc | Esc -> Normal Esc
+  m-e-byp (fork esc @bas (lctl rctl))
+  e-byp   (fork esc @m-e-byp (lmet rmet))
+
+  ;; --- oneshot mods ---
+  osm (one-shot 2000 rmet)
+  oss (one-shot 2000 rsft)
+  osc (one-shot 2000 rctl)
+  osa (one-shot 2000 ralt)
+
+  ;; --- MOUSE SPEEDS ---
+  fst (movemouse-speed 500) 
+  slw (movemouse-speed 20)  
+
+  ;; Normal Mouse Cursor Movement
+  mmu (movemouse-up 10 4)
+  mmd (movemouse-down 10 4)
+  mml (movemouse-left 10 4)
+  mmr (movemouse-right 10 4)
+
+  ;; Scrolling
+  mwl (mwheel-left 100 30)
+  mwd (mwheel-down 100 30)
+  mwu (mwheel-up 100 30)
+  mwr (mwheel-right 100 30)
+
+  ;; Mouse clicks & Macros
+  ml mlft
+  mr mrgt
+  cpy C-c
+  pst C-v
+)
+
+;; layer keys = space, capslock, esc
+(deflayer base
+  @e-bas _    _    _    _    _    _    _    _    _    _    _    _
+  _      _    _    _    _    _    _    _    _    _    _    _    _    _
+  _      _    _    _    _    _    _    _    _    _    _    _    _    _
+  @e-bas _    _    _    _   _    _    _    _    _    _   _    _
+  _      _    _    _    _    _    _    _    _    _    _    _
+  _      _    _              @sp            _   _    _
+)
+
+;; hold space to trigger altt layer
+(deflayer altt
+  _    brdn brup  prnt  _    _     _     _     _     _     _     vold  volu
+  _    f1   f2    f3    f4   f5    f6    f7    f8    f9    f10   f11   f12  _   ;; number row
+  _    grv  S-grv up    _    pgdn  home  pgup  _     _     _     _     _    _
+  _    ret  left  down  rght _     end   @oss  @osc  @osa  @osm  _     _
+  _    del  bspc  _     tab  _     spc   _     _     _     _     _
+  _    _    _     _     _    _     _
+)
+
+;; hold c/v to change cursor speed
+;; comma and dot also scroll
+(deflayer mouse
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    @mwu _    _  @cpy @pst @mmu    _    _    _    _    _
+  _    _    @mwl @mwd @mwr _    _  @mml @mmd @mmr  _    _    _
+  _    _    _  @fst @slw  _    _    @mr  @mwd  @mwu  _    _
+  _    _    _              @ml            _    _    _
+)
+
+;; MEDIA LAYER (Meta + ESC)
+(deflayer media
+  @e-med  _     _     _     _     _    _    _     _     _      _    _     _
+  _       brdn  brup  _     _     _    _    _     _     _      _    vold  volu  _
+  _       _     _     up    _     _    _    _     up    _      _    _     _     _
+  @e-med  _     left  down  rght  _    _    left  down  rght  _    _     _
+  _       _     _     _     _     _    _    _     _     _      _    _
+  _       _     _           @sp             _     _     _
+)
+
+;; BYPASS LAYER: All keys revert to raw physical output except the exit forks. 
+(deflayer bypass
+  @e-byp _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  @e-byp _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ spc _ _ _
+)
+
