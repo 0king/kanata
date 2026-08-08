@@ -22,7 +22,7 @@ how to setup modifiers?
 2. capslock, escape (because it is placed at capslock)
 
 - Caps Lock: tap = Esc, hold = Mouse layer
-- Space: tap = Space, hold = Nav layer
+- Space: tap = Space, hold = Altt layer
 
 ## tap
 1. meta + esc
@@ -30,11 +30,15 @@ how to setup modifiers?
 
 # Layers:
 1. altt
-- one shot mods
+- Not using one shot mods (in their current form)
+- HRMs in right side only
 - esdf become Arrow keys
-- u = PgUp, t = PgDn, h = End, y = Home
-- n = space
-- v = tab
+
+- key c becomes space
+- home, end = h, g
+- tab = t
+- pageup, pagedown = r, v
+
 - w = tilde
 - q = backtick
 - a = enter
