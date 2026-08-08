@@ -125,16 +125,26 @@ how to setup modifiers?
   ;; Right hand mods ONLY trigger if a left hand key is pressed
   ;; Activates $tap-action early if a key within $tap-keys is pressed before hold activates
   ;; "pressing another key on the same half of the keyboard... will activate an early tap action"
-  j (tap-hold-release-keys 0 200 j rsft $r-hand)
-  k (tap-hold-release-keys 0 200 k rctl $r-hand)
-  l (tap-hold-release-keys 0 200 l ralt $r-hand)
-  ; (tap-hold-release-keys 0 300 ; rmet $r-hand) 
+  ;; j (tap-hold-release-keys 0 200 j rsft $r-hand)
+  ;; k (tap-hold-release-keys 0 200 k rctl $r-hand)
+  ;; l (tap-hold-release-keys 0 200 l ralt $r-hand)
+  ;; ; (tap-hold-release-keys 0 300 ; rmet $r-hand) 
+  
+  j (tap-hold 200 200 j rsft)
+  k (tap-hold 200 200 k rctl)
+  l (tap-hold 200 200 l ralt)
+  ; (tap-hold 200 200 ; rmet) 
   
   ;; Left hand mods ONLY trigger if a right hand key is pressed
-  a (tap-hold-release-keys 0 300 a lmet $l-hand)
-  s (tap-hold-release-keys 0 200 s lalt $l-hand)
-  d (tap-hold-release-keys 0 200 d lctl $l-hand)
-  f (tap-hold-release-keys 0 200 f lsft $l-hand)
+  ;; a (tap-hold-release-keys 0 300 a lmet $l-hand)
+  ;; s (tap-hold-release-keys 0 200 s lalt $l-hand)
+  ;; d (tap-hold-release-keys 0 200 d lctl $l-hand)
+  ;; f (tap-hold-release-keys 0 200 f lsft $l-hand)
+
+  a (tap-hold 200 200 a lmet)
+  s (tap-hold 200 200 s lalt)
+  d (tap-hold 200 200 d lctl)
+  f (tap-hold 200 200 f lsft)
 
   ;; --- MOUSE SPEEDS ---
   fst (movemouse-speed 500) 
