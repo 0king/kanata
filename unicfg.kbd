@@ -66,6 +66,29 @@ how to setup modifiers?
   lctl lmet lalt           spc            ralt rmet rctl
 )
 
+(defvar
+  ;; Every key on the left side (Used for opposite-hand modifier checks)
+  ;; spacec is NOT included in any hand
+  l-hand (
+    esc f1 f2 f3 f4 f5
+    grv 1 2 3 4 5
+    tab q w e r t
+    caps a s d f g
+    lsft z x c v b
+    lctl lmet lalt
+  )
+  
+  ;; Every key on the right side
+  r-hand (
+    f6 f7 f8 f9 f10 f11 f12
+    6 7 8 9 0 - = bspc
+    y u i o p [ ] bksl
+    h j k l scln apos ret
+    n m , . / rsft
+    ralt rmet rctl
+  )
+)
+
 (defalias
   ;; Layer toggles
   cl (tap-hold 0 200 esc (layer-while-held mouse))  ;; cl = capslock
@@ -90,10 +113,24 @@ how to setup modifiers?
   e-byp   (fork esc @m-e-byp (lmet rmet))
 
   ;; --- oneshot mods ---
-  osm (one-shot 2000 rmet)
-  oss (one-shot 2000 rsft)
-  osc (one-shot 2000 rctl)
-  osa (one-shot 2000 ralt)
+  ;; osm (one-shot 2000 rmet)
+  ;; oss (one-shot 2000 rsft)
+  ;; osc (one-shot 2000 rctl)
+  ;; osa (one-shot 2000 ralt)
+
+  ;; Right hand mods ONLY trigger if a left hand key is pressed
+  ;; Activates $tap-action early if a key within $tap-keys is pressed before hold activates
+  ;; "pressing another key on the same half of the keyboard... will activate an early tap action"
+  j (tap-hold-release-keys 0 200 j rsft $r-hand)
+  k (tap-hold-release-keys 0 200 k rctl $r-hand)
+  l (tap-hold-release-keys 0 200 l ralt $r-hand)
+  ; (tap-hold-release-keys 0 300 ; rmet $r-hand) 
+  
+  ;; Left hand mods ONLY trigger if a right hand key is pressed
+  a (tap-hold-release-keys 0 300 a lmet $l-hand)
+  s (tap-hold-release-keys 0 200 s lalt $l-hand)
+  d (tap-hold-release-keys 0 200 d lctl $l-hand)
+  f (tap-hold-release-keys 0 200 f lsft $l-hand)
 
   ;; --- MOUSE SPEEDS ---
   fst (movemouse-speed 500) 
@@ -119,33 +156,45 @@ how to setup modifiers?
 )
 
 ;; layer keys = space, capslock, esc
+;; HRMs
+;; using fork
 (deflayer base
   @e-bas _    _    _    _    _    _    _    _    _    _    _    _
-  _      _    _    _    _    _    _    _    _    _    _    _    _    _
-  _      _    _    _    _    _    _    _    _    _    _    _    _    _
-  @e-bas _    _    _    _   _    _    _    _    _    _   _    _
-  _      _    _    _    _    _    _    _    _    _    _    _
-  _      _    _              @sp            _   _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  @e-bas @a   @s   @d   @f   _    _    @j   @k   @l   @;   _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _   _    _              @sp            _   _    _
 )
 
 ;; hold space to trigger altt layer
+;; key c becomes space
+;; home, end = h, g
+;; tab = t
+;; pageup, pagedown = r, v
+;; since we can only have one set of HRMs (right side), keep all other keys on the other side (left)
+
+;; Problems: 
+;;  1. cannot reach right function keys while pressing HRMs
 (deflayer altt
   _    brdn brup  prnt  _    _     _     _     _     _     _     vold  volu
   _    f1   f2    f3    f4   f5    f6    f7    f8    f9    f10   f11   f12  _   ;; number row
-  _    grv  S-grv up    _    pgdn  home  pgup  _     _     _     _     _    _
-  _    ret  left  down  rght _     end   @oss  @osc  @osa  @osm  _     _
-  _    del  bspc  _     tab  _     spc   _     _     _     _     _
+  _    grv  S-grv up    pgup tab   _     _     _     _     _     _     _    _
+  _    ret  left  down  rght end   home  _     _     _     _     _     _
+  _    del  bspc  spc   pgdn _     _     _     _     _     _     _
   _    _    _     _     _    _     _
 )
 
 ;; hold c/v to change cursor speed
-;; comma and dot also scroll
+;; keys m and n also scroll
+;; ijkl = cursor
+;; esdf = scroll
 (deflayer mouse
   _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    @mwu _    _  @cpy @pst @mmu    _    _    _    _    _
-  _    _    @mwl @mwd @mwr _    _  @mml @mmd @mmr  _    _    _
-  _    _    _  @fst @slw  _    _    @mr  @mwd  @mwu  _    _
+  _    _    @mwl @mwd @mwr _  _    @mml @mmd @mmr  _    _    _
+  _    _    _    @fst @slw _  @mwu @mwd  _  _  _    _
   _    _    _              @ml            _    _    _
 )
 
@@ -159,7 +208,8 @@ how to setup modifiers?
   _       _     _           @sp             _     _     _
 )
 
-;; BYPASS LAYER: All keys revert to raw physical output except the exit forks. 
+;; BYPASS LAYER (meta + ctrl + esc)
+;; All keys revert to raw physical output except the exit forks. 
 (deflayer bypass
   @e-byp _ _ _ _ _ _ _ _ _ _ _ _
   _ _ _ _ _ _ _ _ _ _ _ _ _ _
