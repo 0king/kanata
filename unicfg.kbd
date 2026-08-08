@@ -1,6 +1,19 @@
 #|
 kanata v1.12.0
+ubuntu 26
+
 Universal kanata config for all keyboards.
+
+# Big question:
+how to setup modifiers?
+1. HRM (tap-hold)
+2. one-shot
+  1. hold space, trigger one-shot mods (jkl;) 🙅‍♂️
+    Problems with this approach:
+    To type `Q:`: To get capital q, hold space, then tap j, relese space, tap q. Now, to get colon, again hold space, tap j, tap ;
+    My common shortcuts are meta + a, meta + w, meta + tab, meta + f4, meta + arrow. A and W are not on the same layer
+  2. move one-shot mods to different layer - but this still has a problem - instead of holding shift, tap shift multiple times.
+3. chords - tap two keys at once
 
 # Layer triggers:
 
