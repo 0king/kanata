@@ -74,29 +74,6 @@ how to setup modifiers?
   lctl lmet lalt           spc            ralt rmet rctl
 )
 
-;; (defvar
-;;   ;; Every key on the left side (Used for opposite-hand modifier checks)
-;;   ;; spacec is NOT included in any hand
-;;   l-hand (
-;;     esc f1 f2 f3 f4 f5
-;;     grv 1 2 3 4 5
-;;     tab q w e r t
-;;     caps a s d f g
-;;     lsft z x c v b
-;;     lctl lmet lalt
-;;   )
-  
-;;   ;; Every key on the right side
-;;   r-hand (
-;;     f6 f7 f8 f9 f10 f11 f12
-;;     6 7 8 9 0 - = bspc
-;;     y u i o p [ ] bksl
-;;     h j k l scln apos ret
-;;     n m , . / rsft
-;;     ralt rmet rctl
-;;   )
-;; )
-
 (defalias
   ;; Layer toggles
   ;; cl (tap-hold 0 200 esc (layer-while-held mouse))  ;; cl = capslock
@@ -124,38 +101,14 @@ how to setup modifiers?
   m-e-byp (fork esc @bas (lctl rctl))
   e-byp   (fork esc @m-e-byp (lmet rmet))
 
-  ;; --- oneshot mods ---
-  ;; osm (one-shot 2000 rmet)
-  ;; oss (one-shot 2000 rsft)
-  ;; osc (one-shot 2000 rctl)
-  ;; osa (one-shot 2000 ralt)
-
-  ;; Right hand mods ONLY trigger if a left hand key is pressed
-  ;; Activates $tap-action early if a key within $tap-keys is pressed before hold activates
-  ;; "pressing another key on the same half of the keyboard... will activate an early tap action"
-  ;; j (tap-hold-release-keys 0 200 j rsft $r-hand)
-  ;; k (tap-hold-release-keys 0 200 k rctl $r-hand)
-  ;; l (tap-hold-release-keys 0 200 l ralt $r-hand)
-  ;; ; (tap-hold-release-keys 0 300 ; rmet $r-hand) 
-  
+  ;; --- HOME ROW MODS ---
   ;; j (tap-hold 200 200 j rsft)
   ;; Right hand mods with Linux tap-hold workaround (#422) 
   j (multi f24 (tap-hold 200 200 j rsft) (macro 5 (on-press tap-vkey relf24))) 
-  ;; k (tap-hold 200 200 k rctl)
   k (multi f24 (tap-hold 200 200 k rctl) (macro 5 (on-press tap-vkey relf24)))
-  ;; l (tap-hold 200 200 l ralt)
   l (multi f24 (tap-hold 200 200 l ralt) (macro 5 (on-press tap-vkey relf24)))
-  ;; ; (tap-hold 200 200 ; rmet) 
   ; (multi f24 (tap-hold 200 200 ; rmet) (macro 5 (on-press tap-vkey relf24)))
 
-
-  ;; Left hand mods ONLY trigger if a right hand key is pressed
-  ;; a (tap-hold-release-keys 0 300 a lmet $l-hand)
-  ;; s (tap-hold-release-keys 0 200 s lalt $l-hand)
-  ;; d (tap-hold-release-keys 0 200 d lctl $l-hand)
-  ;; f (tap-hold-release-keys 0 200 f lsft $l-hand)
-
-  ;; a (tap-hold 200 200 a lmet)
   a (multi f24 (tap-hold 200 200 a lmet) (macro 5 (on-press tap-vkey relf24)))
   s (multi f24 (tap-hold 200 200 s lalt) (macro 5 (on-press tap-vkey relf24)))
   d (multi f24 (tap-hold 200 200 d lctl) (macro 5 (on-press tap-vkey relf24)))
