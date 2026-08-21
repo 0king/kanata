@@ -114,6 +114,17 @@ how to setup modifiers?
   d (multi f24 (tap-hold 200 200 d lctl) (macro 5 (on-press tap-vkey relf24)))
   f (multi f24 (tap-hold 200 200 f lsft) (macro 5 (on-press tap-vkey relf24)))
 
+  ;; --- PHYSICAL MODIFIER OVERRIDES ---
+  ;; These hold the physical mod AND instantly trigger the no-hrm layer
+  ls (multi lsft (layer-while-held no-hrm))
+  rs (multi rsft (layer-while-held no-hrm))
+  lc (multi lctl (layer-while-held no-hrm))
+  lm (multi lmet (layer-while-held no-hrm))
+  la (multi lalt (layer-while-held no-hrm))
+  rc (multi rctl (layer-while-held no-hrm))
+  rm (multi rmet (layer-while-held no-hrm))
+  ra (multi ralt (layer-while-held no-hrm))
+
   ;; --- MOUSE SPEEDS ---
   fst (movemouse-speed 500) 
   slw (movemouse-speed 20)  
@@ -138,15 +149,25 @@ how to setup modifiers?
 )
 
 ;; layer keys = space, capslock, esc
-;; HRMs
+;; HRMs are active here.
 ;; using fork
 (deflayer base
   @e-bas _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   @e-bas @a   @s   @d   @f   _    _    @j   @k   @l   @;   _    _
+  @ls  _    _    _    _    _    _    _    _    _    _    @rs
+  @lc  @lm  @la            @sp            @ra  @rm  @rc
+)
+
+;; When a physical mod is held, the home row instantly drops HRM logic
+(deflayer no-hrm
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    a    s    d    f    _    _    j    k    l    ;    _    _
   _    _    _    _    _    _    _    _    _    _    _    _
-  _   _    _              @sp            _   _    _
+  _    _    _              spc              _    _    _
 )
 
 ;; hold space to trigger altt layer
@@ -171,10 +192,11 @@ how to setup modifiers?
 ;; keys m and n also scroll
 ;; ijkl = cursor
 ;; esdf = scroll
+;; mouse buttons = space, KEY_R
 (deflayer mouse
   _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    @mwu _    _  @cpy @pst @mmu    _    _    _    _    _
+  _    _    _    @mwu @mr  _  @cpy @pst @mmu    _    _    _    _    _
   _    _    @mwl @mwd @mwr _  _    @mml @mmd @mmr  _    _    _
   _    _    _    @fst @slw _  @mwu @mwd  _  _  _    _
   _    _    _              @ml            _    _    _
