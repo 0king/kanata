@@ -1,47 +1,14 @@
 #|
-kanata v1.12.0
-ubuntu 26
-
+kanata v1.12.0, ubuntu 26
 Universal kanata config for all keyboards.
 
-# Layer triggers:
-
-## hold
-1. thumb keys = space (meta and alt keys can also be used)
-2. capslock, escape (because it is placed at capslock)
-
-- Caps Lock: tap = Esc, hold = Mouse layer
-- Space: tap = Space, hold = Altt layer
-
-## tap
-1. meta + esc
-2. meta + ccontrol + esc
-
-# Layers:
-1. altt
-- Not using one shot mods (in their current form)
-- HRMs in right side only
-- esdf become Arrow keys
-
-- key c becomes space
-- home, end = h, g
-- tab = t
-- pageup, pagedown = r, v
-
-- w = tilde
-- q = backtick
-- a = enter
-- x = backspace
-- z = delete
-- F3 = Print Scr
-- f11/f12 = volume up and down
-- f1/f2 = brightness up and down
-2. Mouse: hold capsock
-3. Media: a easy layer for media playing. 
-   arrows, volume, brighness
-   Shortcut toggle = Meta + ESC
-4. Bypass: bypass kanata completely. 
-   Shortcut toggle = Meta + Ctrl + ESC
+# LAYERS:
+- base (with HRMs)
+- alt (hold space)
+- mouse (hold ESC or capslock)
+- no-hrm (disable HRMs when holding physical mods)
+- media (meta + ESC)
+- bypass (meta + control + ESC)
 
 |#
 
@@ -64,34 +31,30 @@ Universal kanata config for all keyboards.
 )
 
 (defalias
-  ;; Layer toggles
-  ;; Layer toggles with Linux tap-hold workaround (#422) 
-  cl (multi f24 (tap-hold 0 200 esc (layer-while-held lyr-mouse)) (macro 5 (on-press tap-vkey relf24))) 
-  ;; sp (tap-hold 0 200 spc (layer-while-held altt))   ;; sp = space
-  sp (multi f24 (tap-hold 0 200 spc (layer-while-held lyr-alt)) (macro 5 (on-press tap-vkey relf24))) 
+  ;; Layer toggles (with Linux tap-hold workaround (#422)) 
+  cl (multi f24 (tap-hold 0 200 esc (layer-while-held lyr-mouse)) (macro 5 (on-press tap-vkey relf24))) ;; cl = capslock 
+  sp (multi f24 (tap-hold 0 200 spc (layer-while-held lyr-alt)) (macro 5 (on-press tap-vkey relf24))) ;; sp = space 
 
   
   ;; --- LAYER SWITCH ACTIONS ---
-  bas (layer-switch lyr-base)
-  byp (layer-switch lyr-bypass)
-  med (layer-switch lyr-media)
+  switch-base (layer-switch lyr-base)
+  switch-bypass (layer-switch lyr-bypass)
+  switch-media (layer-switch lyr-media)
 
   ;; --- FORK LOGIC ---
   ;; BASE: Meta+Ctrl+Esc -> Bypass | Meta+Esc -> Media | Esc -> @cl
-  m-e-bas (fork @med @byp (lctl rctl))
-  e-bas   (fork @cl @m-e-bas (lmet rmet))
+  fork-bypass-media (fork @switch-media @switch-bypass (lctl rctl))
+  fork-esc-bypass-media (fork @cl @fork-bypass-media (lmet rmet))
 
   ;; MEDIA: Meta+Ctrl+Esc -> Bypass | Meta+Esc -> Base | Esc -> @cl
-  m-e-med (fork @bas @byp (lctl rctl))
-  e-med   (fork @cl @m-e-med (lmet rmet))
+  fork-base-bypass (fork @switch-base @switch-bypass (lctl rctl))
+  fork-esc-base-bypass (fork @cl @fork-base-bypass (lmet rmet))
 
   ;; BYPASS: Meta+Ctrl+Esc -> Base | Meta+Esc -> Normal Esc | Esc -> Normal Esc
-  m-e-byp (fork esc @bas (lctl rctl))
-  e-byp   (fork esc @m-e-byp (lmet rmet))
+  fork-esc-base (fork @switch-media @switch-base (lctl rctl))
+  fork-esc-base-media (fork esc @fork-esc-base (lmet rmet))
 
   ;; --- HOME ROW MODS ---
-  ;; j (tap-hold 200 200 j rsft)
-  ;; Right hand mods with Linux tap-hold workaround (#422) 
   j (multi f24 (tap-hold 200 200 j rsft) (macro 5 (on-press tap-vkey relf24))) 
   k (multi f24 (tap-hold 200 200 k rctl) (macro 5 (on-press tap-vkey relf24)))
   l (multi f24 (tap-hold 200 200 l ralt) (macro 5 (on-press tap-vkey relf24)))
@@ -136,16 +99,71 @@ Universal kanata config for all keyboards.
   pst C-v
 )
 
-;; layer keys = space, capslock, esc
-;; HRMs are active here.
-;; using fork
+;; Base layer with HRMs
+;; hold space for alt layer
+;; hold esc/capslock for mouse layer
 (deflayer lyr-base
-  @e-bas _    _    _    _    _    _    _    _    _    _    _    _
+  @fork-esc-bypass-media  _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  @e-bas @a   @s   @d   @f   _    _    @j   @k   @l   @;   _    _
+  @fork-esc-bypass-media  @a   @s   @d   @f   _    _    @j   @k   @l   @;   _    _
   @ls  _    _    _    _    _    _    _    _    _    _    @rs
   @lc  @lm  @la            @sp            @ra  @rm  @rc
+)
+
+;; ----- Alt layer (trigger = hold space) -----
+;; key c becomes space
+;; home, end = h, g
+;; tab = t
+;; pageup, pagedown = r, v
+;;
+;; esdf become Arrow keys
+;; q = backtick
+;; w = tilde
+;; a = enter
+;; x = backspace
+;; z = delete
+;; F3 = Print Scr
+;; f11/f12 = volume up and down
+;; f1/f2 = brightness up and down
+;;
+;; Problems: 
+;; -- cannot reach right function keys while pressing HRMs
+;; -- HRMs in right side only
+;; -- since we do not have HRMs in left side, do not place keys in right side
+
+(deflayer lyr-alt
+  _    brdn brup  prnt  _    _     _     _     _     _     _     vold  volu
+  _    f1   f2    f3    f4   f5    f6    f7    f8    f9    f10   f11   f12  _   ;; number row
+  _    grv  S-grv up    pgup tab   _     _     _     _     _     _     _    _
+  _    ret  left  down  rght end   home  _     _     _     _     _     _
+  _    del  bspc  spc   pgdn _     _     _     _     _     _     _
+  _    _    _     _     _    _     _
+)
+
+;; hold c/v to change cursor speed
+;; keys m/n also scroll
+;; ijkl = cursor
+;; esdf = scroll
+;; space = left click
+;; r = right click
+(deflayer lyr-mouse
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    @mwu @mr  _  @cpy @pst @mmu    _    _    _    _    _
+  _    _    @mwl @mwd @mwr _  _    @mml @mmd @mmr  _    _    _
+  _    _    _    @fst @slw _  @mwu @mwd  _  _  _    _
+  _    _    _              @ml            _    _    _
+)
+
+;; MEDIA LAYER (Meta + ESC)
+(deflayer lyr-media
+  @fork-esc-base-bypass  _     _     _     _     _    _    _     _     _      _    _     _
+  _       brdn  brup  _     _     _    _    _     _     _      _    vold  volu  _
+  _       _     _     up    _     _    _    _     up    _      _    _     _     _
+  @fork-esc-base-bypass   _     left  down  rght  _    _    left  down  rght  _    _     _
+  _       _     _     _     _     _    _    _     _     _      _    _
+  _       _     _           @sp             _     _     _
 )
 
 ;; When a physical mod is held, the home row instantly drops HRM logic
@@ -158,55 +176,13 @@ Universal kanata config for all keyboards.
   _    _    _              spc              _    _    _
 )
 
-;; hold space to trigger altt layer
-;; key c becomes space
-;; home, end = h, g
-;; tab = t
-;; pageup, pagedown = r, v
-;; since we can only have one set of HRMs (right side), keep all other keys on the other side (left)
-
-;; Problems: 
-;;  1. cannot reach right function keys while pressing HRMs
-(deflayer lyr-alt
-  _    brdn brup  prnt  _    _     _     _     _     _     _     vold  volu
-  _    f1   f2    f3    f4   f5    f6    f7    f8    f9    f10   f11   f12  _   ;; number row
-  _    grv  S-grv up    pgup tab   _     _     _     _     _     _     _    _
-  _    ret  left  down  rght end   home  _     _     _     _     _     _
-  _    del  bspc  spc   pgdn _     _     _     _     _     _     _
-  _    _    _     _     _    _     _
-)
-
-;; hold c/v to change cursor speed
-;; keys m and n also scroll
-;; ijkl = cursor
-;; esdf = scroll
-;; mouse buttons = space, KEY_R
-(deflayer lyr-mouse
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    @mwu @mr  _  @cpy @pst @mmu    _    _    _    _    _
-  _    _    @mwl @mwd @mwr _  _    @mml @mmd @mmr  _    _    _
-  _    _    _    @fst @slw _  @mwu @mwd  _  _  _    _
-  _    _    _              @ml            _    _    _
-)
-
-;; MEDIA LAYER (Meta + ESC)
-(deflayer lyr-media
-  @e-med  _     _     _     _     _    _    _     _     _      _    _     _
-  _       brdn  brup  _     _     _    _    _     _     _      _    vold  volu  _
-  _       _     _     up    _     _    _    _     up    _      _    _     _     _
-  @e-med  _     left  down  rght  _    _    left  down  rght  _    _     _
-  _       _     _     _     _     _    _    _     _     _      _    _
-  _       _     _           @sp             _     _     _
-)
-
 ;; BYPASS LAYER (meta + ctrl + esc)
 ;; All keys revert to raw physical output except the exit forks. 
 (deflayer lyr-bypass
-  @e-byp _ _ _ _ _ _ _ _ _ _ _ _
+  @fork-esc-base-media _ _ _ _ _ _ _ _ _ _ _ _
   _ _ _ _ _ _ _ _ _ _ _ _ _ _
   _ _ _ _ _ _ _ _ _ _ _ _ _ _
-  @e-byp _ _ _ _ _ _ _ _ _ _ _ _
+  @fork-esc-base-media _ _ _ _ _ _ _ _ _ _ _ _
   _ _ _ _ _ _ _ _ _ _ _ _
   _ _ _ spc _ _ _
 )
