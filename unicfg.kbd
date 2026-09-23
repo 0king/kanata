@@ -66,15 +66,15 @@ Universal kanata config for all keyboards.
 (defalias
   ;; Layer toggles
   ;; Layer toggles with Linux tap-hold workaround (#422) 
-  cl (multi f24 (tap-hold 0 200 esc (layer-while-held mouse)) (macro 5 (on-press tap-vkey relf24))) 
+  cl (multi f24 (tap-hold 0 200 esc (layer-while-held lyr-mouse)) (macro 5 (on-press tap-vkey relf24))) 
   ;; sp (tap-hold 0 200 spc (layer-while-held altt))   ;; sp = space
-  sp (multi f24 (tap-hold 0 200 spc (layer-while-held altt)) (macro 5 (on-press tap-vkey relf24))) 
+  sp (multi f24 (tap-hold 0 200 spc (layer-while-held lyr-alt)) (macro 5 (on-press tap-vkey relf24))) 
 
   
   ;; --- LAYER SWITCH ACTIONS ---
-  bas (layer-switch base)
-  byp (layer-switch bypass)
-  med (layer-switch media)
+  bas (layer-switch lyr-base)
+  byp (layer-switch lyr-bypass)
+  med (layer-switch lyr-media)
 
   ;; --- FORK LOGIC ---
   ;; BASE: Meta+Ctrl+Esc -> Bypass | Meta+Esc -> Media | Esc -> @cl
@@ -104,14 +104,14 @@ Universal kanata config for all keyboards.
 
   ;; --- PHYSICAL MODIFIER OVERRIDES ---
   ;; These hold the physical mod AND instantly trigger the no-hrm layer
-  ls (multi lsft (layer-while-held no-hrm))
-  rs (multi rsft (layer-while-held no-hrm))
-  lc (multi lctl (layer-while-held no-hrm))
-  lm (multi lmet (layer-while-held no-hrm))
-  la (multi lalt (layer-while-held no-hrm))
-  rc (multi rctl (layer-while-held no-hrm))
-  rm (multi rmet (layer-while-held no-hrm))
-  ra (multi ralt (layer-while-held no-hrm))
+  ls (multi lsft (layer-while-held lyr-no-hrm))
+  rs (multi rsft (layer-while-held lyr-no-hrm))
+  lc (multi lctl (layer-while-held lyr-no-hrm))
+  lm (multi lmet (layer-while-held lyr-no-hrm))
+  la (multi lalt (layer-while-held lyr-no-hrm))
+  rc (multi rctl (layer-while-held lyr-no-hrm))
+  rm (multi rmet (layer-while-held lyr-no-hrm))
+  ra (multi ralt (layer-while-held lyr-no-hrm))
 
   ;; --- MOUSE SPEEDS ---
   fst (movemouse-speed 500) 
@@ -139,7 +139,7 @@ Universal kanata config for all keyboards.
 ;; layer keys = space, capslock, esc
 ;; HRMs are active here.
 ;; using fork
-(deflayer base
+(deflayer lyr-base
   @e-bas _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
@@ -149,7 +149,7 @@ Universal kanata config for all keyboards.
 )
 
 ;; When a physical mod is held, the home row instantly drops HRM logic
-(deflayer no-hrm
+(deflayer lyr-no-hrm
   _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
@@ -167,7 +167,7 @@ Universal kanata config for all keyboards.
 
 ;; Problems: 
 ;;  1. cannot reach right function keys while pressing HRMs
-(deflayer altt
+(deflayer lyr-alt
   _    brdn brup  prnt  _    _     _     _     _     _     _     vold  volu
   _    f1   f2    f3    f4   f5    f6    f7    f8    f9    f10   f11   f12  _   ;; number row
   _    grv  S-grv up    pgup tab   _     _     _     _     _     _     _    _
@@ -181,7 +181,7 @@ Universal kanata config for all keyboards.
 ;; ijkl = cursor
 ;; esdf = scroll
 ;; mouse buttons = space, KEY_R
-(deflayer mouse
+(deflayer lyr-mouse
   _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    @mwu @mr  _  @cpy @pst @mmu    _    _    _    _    _
@@ -191,7 +191,7 @@ Universal kanata config for all keyboards.
 )
 
 ;; MEDIA LAYER (Meta + ESC)
-(deflayer media
+(deflayer lyr-media
   @e-med  _     _     _     _     _    _    _     _     _      _    _     _
   _       brdn  brup  _     _     _    _    _     _     _      _    vold  volu  _
   _       _     _     up    _     _    _    _     up    _      _    _     _     _
@@ -202,7 +202,7 @@ Universal kanata config for all keyboards.
 
 ;; BYPASS LAYER (meta + ctrl + esc)
 ;; All keys revert to raw physical output except the exit forks. 
-(deflayer bypass
+(deflayer lyr-bypass
   @e-byp _ _ _ _ _ _ _ _ _ _ _ _
   _ _ _ _ _ _ _ _ _ _ _ _ _ _
   _ _ _ _ _ _ _ _ _ _ _ _ _ _
