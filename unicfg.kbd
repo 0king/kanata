@@ -103,8 +103,8 @@ Universal kanata config for all keyboards.
 ;; hold space for alt layer
 ;; hold esc/capslock for mouse layer
 (deflayer lyr-base
-  @fork-esc-bypass-media  _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  @fork-esc-bypass-media  _    _    _    _    _    _    _    _    _    _    _    _  ;; function row
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _                ;; number row
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   @fork-esc-bypass-media  @a   @s   @d   @f   _    _    @j   @k   @l   @;   _    _
   @ls  _    _    _    _    _    _    _    _    _    _    @rs
@@ -133,7 +133,7 @@ Universal kanata config for all keyboards.
 ;; -- since we do not have HRMs in left side, do not place keys in right side
 
 (deflayer lyr-alt
-  _    brdn brup  prnt  _    _     _     _     _     _     _     vold  volu
+  _    brdn brup  prnt  _    _     _     _     _     _     _     vold  volu     ;; function row 
   _    f1   f2    f3    f4   f5    f6    f7    f8    f9    f10   f11   f12  _   ;; number row
   _    grv  S-grv up    pgup tab   _     _     _     _     _     _     _    _
   _    ret  left  down  rght end   home  _     _     _     _     _     _
@@ -148,8 +148,8 @@ Universal kanata config for all keyboards.
 ;; space = left click
 ;; r = right click
 (deflayer lyr-mouse
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _         ;; function row
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _    ;; number row
   _    _    _    @mwu @mr  _  @cpy @pst @mmu    _    _    _    _    _
   _    _    @mwl @mwd @mwr _  _    @mml @mmd @mmr  _    _    _
   _    _    _    @fst @slw _  @mwu @mwd  _  _  _    _
@@ -158,9 +158,9 @@ Universal kanata config for all keyboards.
 
 ;; MEDIA LAYER (Meta + ESC)
 (deflayer lyr-media
-  @fork-esc-base-bypass  _     _     _     _     _    _    _     _     _      _    _     _
-  _       brdn  brup  _     _     _    _    _     _     _      _    vold  volu  _
-  _       _     _     up    _     _    _    _     up    _      _    _     _     _
+  @fork-esc-base-bypass  _     _     _     _     _    _    _     _     _      _    _     _  ;; function row
+  _       brdn  brup  _     _     _    _    _     _     _      _    vold  volu  _           ;; number row
+  _                       _     _     up    _     _    _    _     up    _      _    _     _     _
   @fork-esc-base-bypass   _     left  down  rght  _    _    left  down  rght  _    _     _
   _       _     _     _     _     _    _    _     _     _      _    _
   _       _     _           @sp             _     _     _
