@@ -173,7 +173,7 @@ Universal kanata config for all keyboards.
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    a    s    d    f    _    _    j    k    l    ;    _    _
   _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _              spc              _    _    _
+  _    _    _              @sp              _    _    _
 )
 
 ;; BYPASS LAYER (meta + ctrl + esc)
